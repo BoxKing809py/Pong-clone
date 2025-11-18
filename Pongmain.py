@@ -4,6 +4,8 @@ import pygame as pg
 
 from random import choice
 
+from random import randint
+
 from settings import Settings
 
 from paddle import Blue_Paddle
@@ -124,6 +126,7 @@ class Pongclone:
             self.screen.fill(self.settings.bg_color)
             self.Blue_Paddle.blitme()
             self.P2.blitme()
+            self.text_display()
             if self.Ball.moving == True and self.Ball.visible == True:
                 for activeballs in self.balls.sprites():
                     activeballs.moving = True
@@ -134,15 +137,30 @@ class Pongclone:
                     activeballs.Update(self.Blue_Paddle.rect.top, self.Blue_Paddle.rect.bottom, self.P2.rect.top, self.P2.rect.bottom)
             pg.display.flip()
     def _create_ball(self):
+        # Creates a new ball, and attempts to set all the variables/booleans properly.
         new_ball = Ball(self)
         self.Ball.visible = True
         self.Ball.moving = True
         new_ball.moving_down = choice([True, False])
         new_ball.moving_left = choice([True, False])
+        new_ball.velocity += (randint(1,20)/10)
         self.balls.add(new_ball)
-        self.Ball.velocity = self.settings.ball_speed
+        self.Ball.velocity = (self.settings.ball_speed)
         self.Ball.y = (self.settings.screen_height / 2)
         self.Ball.x = (self.settings.screen_width / 2)
+    
+    def text_display(self):
+        # Draws the  instructions and Score to the screen.
+        font = pg.font.Font(None, 20)
+        font2 = pg.font.Font(None, 42)
+        text = font.render("W/S or UP/DOWN(P2) to move paddles, SPACE to summon balls, M to enable P2, Q to Quit", True, (225, 225, 245))
+        score = font2.render(f"Blue | {self.scoreleft} - {self.scoreright} | Red", True, (255,155,255))
+        textpos = text.get_rect(centerx=self.settings.screen_width / 2, y=20)
+        scorepos = score.get_rect(centerx=self.settings.screen_width / 2, centery=self.settings.screen_height/2)
+        self.screen.blit(text, textpos)
+        self.screen.blit(score, scorepos)
+
+
 if __name__ == '__main__':
     #run the game.
     ai = Pongclone()
