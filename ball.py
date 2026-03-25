@@ -1,5 +1,7 @@
 import pygame as pg
 
+from random import randint
+
 from settings import Settings as set
 
 from pygame.sprite import Sprite
@@ -19,6 +21,8 @@ class Ball(Sprite):
         self.moving_left = False
         self.color = self.settings.ball_color
         self.Blue_paddle = ai_game.Blue_Paddle
+        self.rand = (randint(1,20) / 10)
+        self.rand2 = (randint(10,20) / 10)
 
         # self.image = pg.image.load('ball.bmp')
         # self.rect = self.image.get_rect()
@@ -34,14 +38,14 @@ class Ball(Sprite):
             self.velocity = self.velocity * self.accel
             # if self.rect.top +2 > 0 and self.rect.bottom < self.screen_rect.bottom:
             if self.moving_down:
-                self.y += self.velocity
+                self.y += (self.velocity * self.rand)
             else:
-                self.y -= self.velocity
+                self.y -= (self.velocity * self.rand)
             # if self.rect.left +2 > 0 and self.rect.right < self.settings.screen_width:
             if self.moving_left:
-                self.x -= self.velocity
+                self.x -= (self.velocity * self.rand2)
             else:
-                self.x += self.velocity
+                self.x += (self.velocity * self.rand2)
             if self.rect.top <= 0:
                 self.moving_down = True
             elif self.rect.bottom >= self.settings.screen_height:

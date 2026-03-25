@@ -19,7 +19,7 @@ class Pongclone:
     def __init__(self):
         pg.init()
         #self.screen = pg.display.set_mode((640, 480), pg.RESIZABLE)
-        pg.display.set_caption("PongClone tm")
+        pg.display.set_caption("SnakePong!")
         self.settings = Settings()
         self.balls = pg.sprite.Group()
         self.screen = pg.display.set_mode(
@@ -30,6 +30,10 @@ class Pongclone:
         self.Blue_Paddle = Blue_Paddle(self)
         self.P2 = Red_Paddle(self)
         self.Ball = Ball(self)
+        self.game = False
+        self.titley = self.settings.screen_height / 2
+        self.titleup = True
+        self.titledown = False
 
         self.multiplayer = False
         
@@ -51,13 +55,11 @@ class Pongclone:
                     if self.multiplayer == False:
                         self.Ball.moving = False
                     self.scoreright +=1
-                    print(f"Red, {self.scoreright}")
                 if activeball.rect.left >= self.settings.screen_width:
                     self.balls.remove(activeball)
                     if self.multiplayer == False:
                         self.Ball.moving = False
                     self.scoreleft +=1
-                    print(f"Blue, {self.scoreleft}")
             if self.multiplayer == False:
                 if self.Ball.visible != False:
                     if self.Ball.rect.centery < self.P2.rect.centery:
@@ -118,8 +120,11 @@ class Pongclone:
         if self.multiplayer == False:
             if len(self.balls.copy()) <= 0:
                 self._create_ball()
+                self.Ball.rand = (randint(1,20) / 10)
+                self.Ball.rand2 = (randint(10,20) / 10)
         elif self.multiplayer:
             self._create_ball()
+        self.game = True
         # self._create_ball()
     def _update_screen(self):
          # updates the screen and displays it.
@@ -136,6 +141,14 @@ class Pongclone:
                     activeballs.draw_ball()
                     activeballs.Update(self.Blue_Paddle.rect.top, self.Blue_Paddle.rect.bottom, self.P2.rect.top, self.P2.rect.bottom)
             pg.display.flip()
+            if self.titledown == False:
+                self.titley += 0.2
+            if self.titledown:
+                self.titley -= 0.2
+            if self.titley >= (self.settings.screen_height / 2) + 10:
+                self.titledown = True
+            if self.titley <= (self.settings.screen_height / 2) - 10:
+                self.titledown = False
     def _create_ball(self):
         # Creates a new ball, and attempts to set all the variables/booleans properly.
         new_ball = Ball(self)
@@ -144,6 +157,8 @@ class Pongclone:
         new_ball.moving_down = choice([True, False])
         new_ball.moving_left = choice([True, False])
         new_ball.velocity += (randint(1,20)/10)
+        new_ball.rand = (randint(1,20) / 10)
+        new_ball.rand2 = (randint(1,20) / 10)
         self.balls.add(new_ball)
         self.Ball.velocity = (self.settings.ball_speed)
         self.Ball.y = (self.settings.screen_height / 2)
@@ -151,14 +166,20 @@ class Pongclone:
     
     def text_display(self):
         # Draws the  instructions and Score to the screen.
-        font = pg.font.Font(None, 20)
-        font2 = pg.font.Font(None, 42)
+
+        font = pg.font.Font(None, int(20 * self.settings.ssc))
+        font2 = pg.font.Font(None, int(42 * self.settings.ssc))
+        font3 = pg.font.Font(None, int(90 * self.settings.ssc))
         text = font.render("W/S or UP/DOWN(P2) to move paddles, SPACE to summon balls, M to enable P2, Q to Quit", True, (225, 225, 245))
         score = font2.render(f"Blue | {self.scoreleft} - {self.scoreright} | Red", True, (255,155,255))
+        frontpage = font3.render(f"SnakePong", True, (0, 255, 0), (5, 5, 5))
         textpos = text.get_rect(centerx=self.settings.screen_width / 2, y=20)
         scorepos = score.get_rect(centerx=self.settings.screen_width / 2, centery=self.settings.screen_height/2)
+        frontpagepos = frontpage.get_rect(centerx=self.settings.screen_width / 2, centery= float(self.titley))
         self.screen.blit(text, textpos)
         self.screen.blit(score, scorepos)
+        if self.game == False:
+            self.screen.blit(frontpage, frontpagepos)
 
 
 if __name__ == '__main__':
